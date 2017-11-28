@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Add this to <head> -->
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap@next/dist/css/bootstrap.min.css"/>
+  <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+
+  <script src="https://unpkg.com/vue"></script>
+
+  <!-- Add this after vue.js -->
+  <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+  <style>
+  table {
+    table-layout:auto;
+    width:100%;
+
+}
+table td { font-size:10px; text-align:center; padding:10px; }
+table th { font-size:10px; text-align:center; padding:10px; }
+
+.is-red{
+            background: red;
+        }
+        .is-blue{
+            background: lightblue;
+        }
+        .green{
+  background-color: #41B883;
+}
+.blue{
+  background-color: #35495E;
+}
+@media only screen and (max-width: 800px) {
+    
+    /* Force table to not be like tables anymore */
+	#no-more-tables table, 
+	#no-more-tables thead, 
+	#no-more-tables tbody, 
+	#no-more-tables th, 
+	#no-more-tables td, 
+	#no-more-tables tr { 
+		display: block; 
+	}
+ 
+	/* Hide table headers (but not display: none;, for accessibility) */
+	#no-more-tables thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+ 
+	#no-more-tables tr { border: 1px solid #ccc; }
+ 
+	#no-more-tables td { 
+		/* Behave  like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
+		white-space: normal;
+		text-align:left;
+	}
+ 
+	#no-more-tables td:before { 
+		/* Now like a table header */
+		position: absolute;
+		/* Top/left values mimic padding */
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+		text-align:left;
+		font-weight: bold;
+	}
+ 
+	/*
+	Label the data
+	*/
+	#no-more-tables td:before { content: attr(data-title); }
+}
+</style>
+</head>
+<body>
+
+<div class="container" >
+
+
+
+  
+
+<div id="calapp">{{ message }}
+
+	
+<div id="no-more-tables">
+  <table class="col-sm-12 table-bordered cf">
+    <thead class="text-center">
+      <tr>
+        <th rowspan="3" colspan="3" class="text-center"></th>
+        <th colspan="15" class="text-center" @click="godinaMinus()" style="background:#fcfcfc; cursor:pointer;"><span><strong style="font-weight:900;"> <<< </strong></span></th>
+        <th colspan="8" class="text-center" style="background:#fcfcfc;"><h5>Godina {{ godina }}</h5></th>
+        <th colspan="15" class="text-center" @click="godinaPlus()" style="background:#fcfcfc; cursor:pointer;"><span><strong style="font-weight:900;"> >>> </strong></span></th>
+      </tr>
+      <tr>
+        <!--<th colspan="3"></th>-->
+        <th colspan="42"></th>
+        <!--<th colspan="7" class="text-center" :data-title="tjedan1" style="background: lightgray;">{{ tjedan1 }}</th>
+        <th colspan="7" class="text-center" :data-title="tjedan2" style="background: lightgray;">{{ tjedan2 }}</th>
+        <th colspan="7" class="text-center" :data-title="tjedan3" style="background: lightgray;">{{ tjedan3 }}</th>
+        <th colspan="7" class="text-center" :data-title="tjedan4" style="background: lightgray;">{{ tjedan4 }}</th>
+        <th colspan="7" class="text-center" :data-title="tjedan5" style="background: lightgray;">{{ tjedan5 }}</th>
+        <th colspan="7" class="text-center" :data-title="tjedan6" style="background: lightgray;">{{ tjedan6 }}</th>-->
+      </tr>
+      <tr>
+        <!--<th colspan="3"></th>-->
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]">{{ dayname[index] }}</th>
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]">{{ dayname[index] }}</th>
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]">{{ dayname[index] }}</th>
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]">{{ dayname[index] }}</th>
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]">{{ dayname[index] }}</th>
+        <th style="display:none;">|</th>
+        <th v-for="(dayname, index) in weekDays" :data-title="dayname[index]" v-if="index < 3">{{ dayname[index] }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(month, index) in monthNames">
+        <td colspan="3">{{ month[index + 1] }}</td>
+        <td v-for="n in 44" :id="retid(index, n)" :data-tf="cellDays[index]['sel_' + n]" :data-date="cellDays[index]['day_' + n]" @click="clickedCell(index, n)" :style="cellDays[index]['class_' + n]" ><div :data-item="cellDays[index]['raz_' + n]" class="text-center">{{ cellDays[index][n] }}</div>
+        </td>
+      </tr>    
+    </tbody>
+  </table>
+  <span v-for="dstr in selectedDays">
+{{ dstr.dateStr }},&nbsp;
+</span>
+</div><!--calapp-->
+</div>
+</div>
+
+
+</body>
+
+<script type="text/javascript">
+
+	
+ 
+  var app = new Vue({
+  el: '#calapp',
+  data: {
+    message: 'Created by Kristijan Klepač for private use! If you wanna use it please contact me for permission.',
+    isLoading: true,
+    color: '#41B883',
+    firstCellClicked: 0,
+    secondCellClicked: 1,
+    firstVal: '',
+    secVal: '',
+    prevFirstVal: '',
+    prevSecVal: '',
+    selectedDays: [],
+    disabledX: 'lightgray',
+    disabledI: 'lightgray',
+    gradFirstLast: 'repeating-linear-gradient(45deg,#41B883,#41B883 3px,red 10px,red 6px)',
+    selectedRangeColor: '#41B883',
+    colorFontSelected: '#fff',
+    colorFontStandard: '#333',
+    standardBackground: '#fff',
+    grayBackground: 'gray',
+    godina: new Date().getUTCFullYear(),
+    tjedan1: '',
+    tjedan2: '',
+    tjedan3: '',
+    tjedan4: '',
+    tjedan5: '',
+    tjedan6: '',
+    monthNames: [
+    { 1: 'SIJ' },
+    { 2: 'VELJ' },
+    { 3: 'OŽU' },
+    { 4: 'TRA' },
+    { 5: 'SVI' },
+    { 6: 'LIP' },
+    { 7: 'SRP' },
+    { 8: 'KOL' },
+    { 9: 'RUJ' },
+    { 10: 'LIS' },
+    { 11: 'STU' },
+    { 12: 'DEC' }
+    ],
+    weekDays: [
+      { 0: 'P' },
+      { 1: 'U' },
+      { 2: 'S' },
+      { 3: 'Č' },
+      { 4: 'P' },
+      { 5: 'S' },
+      { 6: 'N' }
+    ],
+    cellDays: [
+        { 1: {} },
+        { 2: {} },
+        { 3: {} },
+        { 4: {} },
+        { 5: {} },
+        { 6: {} },
+        { 7: {} },
+        { 8: {} },
+        { 9: {} },
+        { 10: {} },
+        { 11: {} },
+        { 12: {} }
+    ]
+  },
+  updated () {
+
+    this.renderCal();
+
+  },
+  created: function() {
+
+  	this.loopThrough(this.selectedDays);
+
+    this.selectedDays = [];
+    
+    this.renderCal();
+    
+  },
+  methods: {
+
+  	renderCal () {
+
+  	/* get month first day */ /* 0-pon, ... 6-ned */
+    for (var miy = 0; miy <= 11; miy++) { // za svaki mjesec prvi dan pada na dan u tjednu
+
+    	var mFD = new Date(this.godina, miy, 1);
+        var dayInWeek = mFD.getUTCDay();
+
+        var howManyDaysInMonth = this.getDaysInMonth(miy,this.godina);
+
+        for (var x=1; x <= 48; x++) { // 40 polja za dane u mjesecu ( max 31 punih ... ostalo prazno zavisno od mjeseca )
+
+        	if(x === 1 || x === 9 || x === 17 || x === 25 || x === 33 || x === 41) { // razdjelnici kalendara |
+
+               this.createCellDays(miy, x, "", "razdjelnik");
+
+        	} else {
+
+        	  if( x < 9 && ((x - 2) === dayInWeek) ) { // prvi tjedan u kojem trazimo pocetni dan (pon, ut, sri ...)
+
+        	  	 var prviDanZadnjiDan = 1;
+
+                 this.createCellDays(miy, x, prviDanZadnjiDan, "firstweek");
+
+        	     var pocetniIndex = dayInWeek + 2;
+
+        	     prviDanZadnjiDan++;
+
+        	  }
+
+        	  else {
+
+        	  	 if(prviDanZadnjiDan && (prviDanZadnjiDan <= howManyDaysInMonth)) {
+
+        	  	 	this.createCellDays(miy, x, prviDanZadnjiDan, "ostalidani");
+
+        	        prviDanZadnjiDan++;
+
+        	  	 } 
+
+                 else if(prviDanZadnjiDan && (prviDanZadnjiDan > howManyDaysInMonth)) {
+
+        	  	 	this.createCellDays(miy, x, "", "lastweek");
+
+                    prviDanZadnjiDan = null;
+
+        	  	 } 
+
+        	  	 else {
+
+        	  	 	this.createCellDays(miy, x, "", "");
+        	  	 	
+        	  	 }
+
+        	  }
+        	  
+        	}
+   		
+    	}
+    	
+    }
+
+  	},
+  	createCellDays(miy, x, danNum, variant) { // variant ( razdjelnik, firstweek, lastweek, ostalidani )
+
+       switch(variant) {
+		    case 'razdjelnik':
+		        this.cellDays[miy][x] = "|";
+                this.cellDays[miy]['raz_' + x] = "razdjelnik";
+                this.cellDays[miy]['sel_'+ x]= false;
+                this.cellDays[miy]['class_' + x] = "background:gray;padding:5px;color:white;display:none;";
+                this.cellDays[miy]['day_'+x] = "x";
+		        break;
+		    case 'firstweek':
+		        this.cellDays[miy][x] = danNum;
+        	    this.cellDays[miy]['raz_' + x] = "fdm";
+        	    this.cellDays[miy]['sel_'+x]= false;
+        	    this.cellDays[miy]['class_' + x] = "padding:5px;cursor:pointer;";
+
+        	    if(danNum < 10) { var day = "0"+danNum; } else { var day = danNum; }
+        	    if(miy < 10) { var mt = "0"+(miy+1); } else { var mt = miy+1; }
+
+        	    this.cellDays[miy]['day_'+x] = this.godina+"-"+mt+"-"+day;
+		        break;
+		    case 'ostalidani':
+		        this.cellDays[miy][x] = danNum;
+        	    this.cellDays[miy]['raz_' + x] = "x";
+        	    this.cellDays[miy]['sel_'+x]= false;
+        	    this.cellDays[miy]['class_' + x] = "padding:5px;cursor:pointer;";
+
+        	    if(danNum < 10) { var day = "0"+danNum; } else { var day = danNum; }
+        	    if(miy < 10) { var mt = "0"+(miy+1); } else { var mt = miy+1; }
+
+        	    this.cellDays[miy]['day_'+x] = this.godina+"-"+mt+"-"+day;
+		        break;
+            case 'lastweek':
+		        this.cellDays[miy][x] = " x ";
+        	    this.cellDays[miy]['raz_' + x] = "x";
+        	    this.cellDays[miy]['sel_'+x]= false;
+        	    this.cellDays[miy]['class_' + x] = "background:gray;padding:5px;color:white;";
+
+        	    this.cellDays[miy]['day_'+x] = "x";
+                break;
+		    default:
+		        this.cellDays[miy][x] = " x ";
+        	    this.cellDays[miy]['raz_' + x] = "x";
+        	    this.cellDays[miy]['sel_'+x]= false;
+        	    this.cellDays[miy]['class_' + x] = "background:gray;padding:5px;color:white;";
+
+        	    this.cellDays[miy]['day_'+x] = "x";
+		}
+  	},
+  	godinaPlus() {
+
+  		this.godina++;
+
+  		this.loopThrough(this.selectedDays);
+
+		this.selectedDays = [];
+
+  	},
+    godinaMinus() {
+
+    	this.godina--;
+
+    	this.loopThrough(this.selectedDays);
+
+		this.selectedDays = [];
+
+    },
+  	getDaysInMonth(month,year) {
+	  // Here January is 1 based
+	  //Day 0 is the last day in the previous month
+	//return new Date(year, month, 0).getDate();
+	  // Here January is 0 based
+	return new Date(year, month+1, 0).getDate();
+	},
+	retid(ind, n) { // jedinstveni id za svaki td
+
+		//console.log("tt"+this.cellDays[ind][n]);
+
+		var Numberx = this.cellDays[ind][n];
+
+        //console.log(this.isNumInt(Numberx));
+
+		if(this.isNumInt(Numberx)) {
+
+			return "ind_"+ind+"n_"+n;
+
+		} else {
+
+			return "ind_"+ind+"n_"+n+"_disabled";
+		}
+
+	},
+	isNumInt(num) {
+
+		Number.isInteger = Number.isInteger || function(value) {
+		    return typeof value === "number" && 
+		           isFinite(value) && 
+		           Math.floor(value) === value;
+		};
+
+       return Number.isInteger(num);
+	},
+	retSelIndex(txt) {
+
+		var txt = txt;
+		var str = txt.match(/\d+/g, "")+'';
+		var s = str.split(',').join('sel_');
+		var myarr = s.split("sel_");
+		//console.log(myarr);
+
+		return myarr;
+
+	},
+	prevFirstSecCheck(prevVal, oneOrTwo) {
+
+		           if(!document.getElementById(prevVal+"_disabled")) {
+
+                    var arrForSelTrueFalse = this.retSelIndex(prevVal);
+
+                    this.cellDays[arrForSelTrueFalse[0]]['sel_'+arrForSelTrueFalse[1]] = false;
+
+                	var tdx = document.getElementById(prevVal);
+
+                    tdx.style.background = "white";
+
+                    if(oneOrTwo == "one") {
+
+                    	this.prevFirstVal = '';
+
+                    } else if (oneOrTwo == "two")
+
+                        this.prevSecVal = '';
+
+                    }
+
+	},
+	clickedCell(ind, n) {
+
+		this.cellDays[ind]['sel_'+ n] = !this.cellDays[ind]['sel_'+ n]; // true to false and back
+		
+	    if(!document.getElementById("ind_"+ind+"n_"+n+"_disabled")) { 
+
+	        if(this.firstCellClicked == 0 && this.secondCellClicked == 1) { // prvi klik na neki cell
+
+	        	this.loopThrough(this.selectedDays);
+
+		        this.selectedDays = [];
+
+	        	this.firstVal = '';
+	        	this.secVal = '';
+
+			    this.firstCellClicked = 1;
+			    this.secondCellClicked = 2;
+
+                this.firstVal = "ind_"+ind+"n_"+n;
+
+                this.cellDays[ind]['sel_'+ n] = true;
+
+                if(this.prevFirstVal && this.prevFirstVal != '' && this.prevFirstVal != this.firstVal) {
+
+                    //console.log(this.retSelIndex(this.prevFirstVal));
+
+                    this.prevFirstSecCheck(this.prevFirstVal, "one");
+
+                    this.prevFirstVal = '';
+
+                }
+
+                if(this.prevSecVal && this.prevSecVal != '' && this.prevSecVal != this.secVal) {
+
+                	//console.log(this.retSelIndex(this.prevSecVal));
+
+                	this.prevFirstSecCheck(this.prevSecVal, "two");
+
+                    this.prevSecVal = '';
+
+                }
+
+		    }
+
+		    else if(this.firstCellClicked == 1 && this.secondCellClicked == 2) { // drugi klik na neki cell
+
+			    this.firstCellClicked = 0;
+			    this.secondCellClicked = 1;
+
+			    if(this.prevFirstVal && this.prevFirstVal != '' && this.prevFirstVal != this.firstVal) {
+
+			    	//console.log(this.retSelIndex(this.prevFirstVal));
+
+			    	this.prevFirstSecCheck(this.prevFirstVal, "one");
+
+                	this.prevFirstVal = '';
+
+                }
+
+                if(this.prevSecVal && this.prevSecVal != '' && this.prevSecVal != this.secVal) {
+
+                	//console.log(this.retSelIndex(this.prevSecVal));
+
+                	this.prevFirstSecCheck(this.prevSecVal, "two");
+
+                	this.prevSecVal = '';
+
+                }
+
+			    if(this.firstVal == '') {
+
+                    this.firstVal = "ind_"+ind+"n_"+n;
+                    this.secVal = '';
+
+	            } else {
+
+	            	this.firstVal = this.firstVal;
+	            	this.secVal = "ind_"+ind+"n_"+n;
+
+	            	//console.log('?imamo oba');
+
+	            	/* resetiraj all light green ako ima */
+
+
+	            	/* obojaj sve izmedju ta dva datuma */
+
+	            	this.obojiCelije( this.firstVal,this.secVal );
+
+	            }
+
+	            if(this.prevFirstVal == '') {
+                     
+                     this.prevFirstVal = this.firstVal;
+			    }
+
+			    if(this.prevSecVal == '') {
+
+			    	this.prevSecVal = this.secVal;
+			    	
+			    }
+
+		    }
+
+		}
+
+        //console.log(this.firstCellClicked, this.secondCellClicked, this.firstVal, this.secVal);
+
+		if(!this.cellDays[ind]['sel_'+ n] && this.cellDays[ind]['sel_'+ n] === false) {
+
+			if(!document.getElementById("ind_"+ind+"n_"+n+"_disabled")) {
+
+			var tdx = document.getElementById("ind_"+ind+"n_"+n);
+
+            tdx.style.background = this.selectedRangeColor;
+
+            tdx.style.color = this.colorFontSelected;
+
+            } 
+
+		} 
+
+		else if(this.cellDays[ind]['sel_'+ n] && this.cellDays[ind]['sel_'+ n] === true) {
+
+			if(!document.getElementById("ind_"+ind+"n_"+n+"_disabled")) {
+
+			var tdx = document.getElementById("ind_"+ind+"n_"+n);
+
+            tdx.style.background = this.gradFirstLast; 
+
+            }
+
+		}
+
+		else {
+            
+            var tdx = document.getElementById("ind_"+ind+"n_"+n+"_disabled");
+
+            tdx.style.background = this.grayBackground; 
+
+		}
+
+	},
+
+	loopThrough(obj) {
+
+		  for(var key in obj){
+		    // skip loop if the property is from prototype
+		    if(!obj.hasOwnProperty(key)) continue;
+
+		    if(typeof obj[key] !== 'object'){
+		      //your code
+		      if(key == "ind") {
+		      	//console.log(key+" = "+obj[key]);
+
+		      	if(!document.getElementById(obj[key]+"_disabled")) {
+
+		      	var tdx = document.getElementById(obj[key]);
+
+                tdx.style.background = this.standardBackground;
+
+                tdx.style.color = this.colorFontStandard;
+
+                }
+
+		      }
+
+		     if(key == "sel") {
+
+		      	//console.log(this.retSelIndex(obj[key]));
+
+		      	if(!document.getElementById(obj[key]+"_disabled")) {
+
+		      	var arrForSelTrueFalse = this.retSelIndex(obj[key]);
+
+                this.cellDays[arrForSelTrueFalse[0]]['sel_'+arrForSelTrueFalse[1]] = false;
+
+                //console.log(this.cellDays[arrForSelTrueFalse[0]]['sel_'+arrForSelTrueFalse[1]]);
+
+                }
+
+		      }
+		      
+		    } else {
+		      this.loopThrough(obj[key]);
+		    }
+		  }
+		},
+	pushSelDays(i, x) {
+
+		var tdx = document.getElementById("ind_"+i+"n_"+x);
+
+        tdx.style.background = this.selectedRangeColor;
+
+        tdx.style.color = this.colorFontSelected;
+
+        this.selectedDays.push({sel: "sel_"+i+"n_"+x, ind: "ind_"+i+"n_"+x, dateStr: document.getElementById("ind_"+i+"n_"+x).getAttribute("data-date") });
+
+	},
+	obojiCelije(first,last) {
+
+		//console.log(this.retSelIndex(first),this.retSelIndex(last));
+
+		this.loopThrough(this.selectedDays);
+
+		this.selectedDays = [];
+
+		var firstArr = this.retSelIndex(first);
+		var lastArr = this.retSelIndex(last);
+
+		/* utvrdi koji index je veci first or last */
+
+		//console.log('tt',Number(firstArr[0])); console.log(Number(lastArr[0]));
+
+		if(Number(firstArr[0]) <= Number(lastArr[0])) { //console.log('ovo');
+
+          var prviIndex = Number(firstArr[0]);
+          var prviIndexN = Number(firstArr[1]);
+          var drugiIndex = Number(lastArr[0]);
+          var drugiIndexN = Number(lastArr[1]);
+
+		} else if(Number(firstArr[0]) > Number(lastArr[0])) {
+
+		  var prviIndex = Number(lastArr[0]);
+		  var prviIndexN = Number(lastArr[1]);
+          var drugiIndex = Number(firstArr[0]);
+          var drugiIndexN = Number(firstArr[1]);
+
+		}
+
+		this.pushSelDays(prviIndex, prviIndexN);
+		this.pushSelDays(drugiIndex, drugiIndexN); //console.log(this.cellDays[prviIndex]['sel_'+ prviIndexN]);
+
+        if(this.cellDays[prviIndex]['sel_'+ prviIndexN] === false) { this.cellDays[prviIndex]['sel_'+ prviIndexN] = true;
+
+           var tdx = document.getElementById("ind_"+prviIndex+"n_"+prviIndexN);
+
+           tdx.style.background = this.gradFirstLast;
+
+         }
+		
+		if(this.cellDays[drugiIndex]['sel_'+ drugiIndexN] === false) { this.cellDays[drugiIndex]['sel_'+ drugiIndexN] = true;
+
+           var tdx = document.getElementById("ind_"+drugiIndex+"n_"+drugiIndexN);
+
+           tdx.style.background = this.gradFirstLast;
+
+
+		 }
+		//console.log(prviIndexN); console.log(drugiIndexN);
+
+		//console.log(document.getElementById("ind_"+prviIndex+"n_"+prviIndexN).getAttribute("data-date"));
+
+		for (var i = prviIndex; i <= drugiIndex; i++) {
+			//console.log(this.cellDays[i]);
+
+			if(i == prviIndex && i < drugiIndex) {
+
+				for (var x=1; x <= 48; x++) {
+
+					if( x > prviIndexN ) { //console.log(x);
+
+						var obcel = this.retid(i, x);
+
+						//console.log(obcel)
+
+						if(obcel != "ind_"+i+"n_"+x+"_disabled") {
+
+							this.pushSelDays(i, x);
+
+						}	
+
+					}
+
+			    }
+
+			}
+
+			if(i == prviIndex && i == drugiIndex) {
+
+				for (var x=1; x <= 48; x++) {
+
+					if( x > prviIndexN && x < drugiIndexN && drugiIndexN > prviIndexN) { //console.log(x);
+
+						var obcel = this.retid(i, x);
+
+						//console.log(obcel)
+
+						if(obcel != "ind_"+i+"n_"+x+"_disabled") {
+
+							this.pushSelDays(i, x);
+
+						}	
+
+					}
+
+					if( x < prviIndexN && x > drugiIndexN && drugiIndexN < prviIndexN) { //console.log(x);
+
+						var obcel = this.retid(i, x);
+
+						//console.log(obcel)
+
+						if(obcel != "ind_"+i+"n_"+x+"_disabled") {
+
+							this.pushSelDays(i, x);
+
+						}	
+
+					}
+
+			    }
+
+			}
+
+			if(i > prviIndex && i < drugiIndex) {
+
+				for (var x=1; x <= 48; x++) {
+
+						var obcel = this.retid(i, x);
+
+						//console.log(obcel)
+
+						if(obcel != "ind_"+i+"n_"+x+"_disabled") {
+					
+							this.pushSelDays(i, x);
+
+						}
+
+			    }
+
+			}
+
+			if(i > prviIndex && i == drugiIndex) {
+
+				for (var x=1; x <= 48; x++) {
+
+					if( x < drugiIndexN) { //console.log(x);
+
+						var obcel = this.retid(i, x);
+
+						//console.log(obcel)
+
+						if(obcel != "ind_"+i+"n_"+x+"_disabled") {
+
+                           this.pushSelDays(i, x);
+
+						}	
+
+					}
+
+			    }
+
+			}
+
+
+		}
+         //console.log(this.selectedDays);
+
+	}
+
+
+  }
+})
+
+
+</script>
+</html>
